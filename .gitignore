@@ -1,0 +1,55 @@
+# 本公开仓库原则上只保留公开文档/脱敏夹具。
+# .gitignore 不能替代保密审查：历史已提交文件不会被忽略，推送前必须人工检查。
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+node_modules/
+dist/
+build/
+*.log
+
+# 原生EDA资产及常见专有网表
+*.brd
+*.BRD
+*.dsn
+*.DSN
+*.opj
+*.OPJ
+*.dra
+*.DRA
+*.pad
+*.PAD
+pstxnet.dat
+pstxprt.dat
+pstchip.dat
+
+# 易含工程敏感信息的文档数据（需公开样例请用明确脱敏的单独文件类型/目录）
+*.xlsx
+*.xls
+*.pdf
+*.Pdf
+
+# 工作数据目录
+local-data/
+private-data/
+workspaces/
+customer-data/
+design-projects/
+data/raw/
+samples/private/
+reports/private/
+
+# 导出与工具缓存
+__generated__/
+.cache/
+*.tmp
+*.bak
