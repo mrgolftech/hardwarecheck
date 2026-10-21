@@ -1,0 +1,59 @@
+{
+  "catalog_version": "0.1",
+  "classification": "prototype",
+  "rules": [
+    {
+      "id": "SCH-NET-001",
+      "implemented": true,
+      "type": "deterministic",
+      "description": "同一位号的同一物理引脚被解析到两个不同网络",
+      "status_if_found": "FAIL",
+      "caveat": "也可能是输入数据/映射解析问题；必须回到EDA源文件复核"
+    },
+    {
+      "id": "SCH-NET-002",
+      "implemented": true,
+      "type": "heuristic",
+      "description": "单成员网络提示",
+      "status_if_found": "SUSPECTED",
+      "caveat": "NC、测试和设计意图可能使之完全合法"
+    },
+    {
+      "id": "SCH-BOM-001",
+      "implemented": true,
+      "type": "inventory",
+      "description": "网表位号在给定CSV BOM缺失",
+      "status_if_found": "NEEDS_REVIEW",
+      "caveat": "必须区分DNP/装配变体/机械件"
+    },
+    {
+      "id": "SCH-BOM-002",
+      "implemented": true,
+      "type": "inventory",
+      "description": "BOM位号在给定平面网表缺失",
+      "status_if_found": "NEEDS_REVIEW",
+      "caveat": "允许无电气连接器件与机械位号"
+    },
+    {
+      "id": "SCH-PWR-001",
+      "implemented": false,
+      "type": "calculation",
+      "description": "可调电源芯片反馈电压及裕量",
+      "needs": ["MPN", "verified datasheet", "feedback topology", "R values", "target voltage"]
+    },
+    {
+      "id": "SCH-IF-001",
+      "implemented": false,
+      "type": "semantic",
+      "description": "跨供电域UART逻辑电平匹配",
+      "needs": ["I/O domain voltages", "verified VIH/VIL/VOH/VOL", "signal directions"]
+    },
+    {
+      "id": "PCB-DECAP-001",
+      "implemented": false,
+      "type": "pcb_geometry",
+      "description": "供电去耦位置和连接关系",
+      "needs": ["PCB layer, pad, trace and via geometry", "design-specific threshold"]
+    }
+  ]
+}
