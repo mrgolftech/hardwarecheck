@@ -1,0 +1,6 @@
+{
+  "metadata": {"synthetic": true, "notes": "inventory-only test"},
+  "components": [{"ref": "U1"}, {"ref": "J1"}],
+  "edges": [],
+  "drawings": []
+}
