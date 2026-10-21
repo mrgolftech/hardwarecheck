@@ -10,6 +10,7 @@ from .rules import run_rules
 from .report import validate_findings
 from .pcb import summarize_pcb
 from .datasheet import search_pdf
+from .eco import compare_designs
 
 
 def parser() -> argparse.ArgumentParser:
@@ -32,6 +33,12 @@ def parser() -> argparse.ArgumentParser:
     x.add_argument("--max-hits", type=int, default=12)
     x = sub.add_parser("pcb-summary")
     x.add_argument("--path", required=True)
+    x = sub.add_parser("eco-diff")
+    x.add_argument("--old-netlist", required=True)
+    x.add_argument("--new-netlist", required=True)
+    x = sub.add_parser("validate-findings")
+    x.add_argument("--netlist", required=True)
+    x.add_argument("--findings", required=True, help="JSON array or {findings: [...]}")
     return p
 
 
@@ -40,6 +47,17 @@ def execute(args: argparse.Namespace) -> dict:
         return search_pdf(args.pdf, args.term, args.max_hits)
     if args.command == "pcb-summary":
         return summarize_pcb(args.path)
+    if args.command == "eco-diff":
+        return compare_designs(build_design(args.old_netlist), build_design(args.new_netlist))
+    if args.command == "validate-findings":
+        path = Path(args.findings)
+        if path.stat().st_size > 5_000_000:
+            raise ValueError("candidate findings JSON exceeds 5MB")
+        raw = json.loads(path.read_text(encoding="utf-8-sig"))
+        candidate = raw if isinstance(raw, list) else raw.get("findings") if isinstance(raw, dict) else None
+        if not isinstance(candidate, list) or any(not isinstance(x, dict) for x in candidate):
+            raise ValueError("Expected findings array of JSON objects")
+        return validate_findings(build_design(args.netlist), candidate)
     design = build_design(args.netlist, args.parts)
     if args.command == "inspect":
         return {
