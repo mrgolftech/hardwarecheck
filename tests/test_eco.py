@@ -23,7 +23,7 @@ class EcoTests(unittest.TestCase):
             new = build_design(new_path)
         diff = compare_designs(old, new)
         self.assertIn("J3", diff["added_components"])
-        self.assertIn("J2", diff["removed_components"])
+        self.assertNotIn("J2", diff["removed_components"])  # J2 still has its GND pin
         self.assertEqual(diff["modified_nets"][0]["net"], "UART_TX")
         self.assertEqual(diff["status"], "STRUCTURAL_DIFF_ONLY")
 
