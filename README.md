@@ -1,7 +1,30 @@
 # hardwarecheck — 基于通用 Agent 的硬件设计智能审查
 
-> 项目状态：规划 / 技术验证准备阶段 · 方案版本：V0.1 · 更新：2026-10-22  
-> 重要声明：当前仓库是**项目方案与技术基线**，尚未完成网表解析、PCB检查或缺陷检出率验证。AI输出不能替代正式的硬件评审、EDA ERC/DRC、必要仿真或实测。
+> 项目状态：V0.2-alpha 工程骨架已提交（真实EDA尚未验证） · 方案版本：V0.2 · 更新：2026-10-22  
+> 重要声明：当前仓库包含**方案文档、7个Agent Skills和初版Python只读CLI**。平面网表解析、基础BOM差异等已有实现和合成测试用例，但尚未在真实OrCAD/Allegro项目验证；完整PCB几何检查、电气规则与实际缺陷检出率仍未实现或未验证。AI输出不能替代正式的硬件评审、EDA ERC/DRC、必要仿真或实测。
+
+## 快速开始（V0.2-alpha）
+
+本项目**不开发新的通用Agent**，在支持Skills的OpenCode/Codex等现成客户端里运行。专业工具本地执行，无需单独LLM调用；有意调用外部模型前须遵循单位授权和数据分级要求。
+
+```bash
+python -m pip install -e .
+python -m unittest discover -s tests -v
+python -m hardwarecheck inspect --netlist tests/fixtures/pstxnet.dat --parts tests/fixtures/pstxprt.dat
+python -m hardwarecheck review --netlist tests/fixtures/pstxnet.dat --parts tests/fixtures/pstxprt.dat --bom tests/fixtures/bom.csv
+```
+
+其余命令包括 `component`、`net`、`bom-diff`、`eco-diff`、`validate-findings`、`pdf-search`（需可选PyMuPDF）和 `pcb-summary`（仅数据清点）。
+
+**当前已实现四项小型规则**：同一物理引脚解析到多个网络、单成员网络提示、BOM/网表双向位号差异；其余电源反馈、UART电平、PCB去耦等规则仍未实现。当前脚本不进行真正的Allegro PCB几何DRC/SI/PI或完整器件手册电气验证。
+
+- [V0.2工程架构与运行说明](docs/07-开发架构与运行指南.md)
+- [当前进度、已完成与待验证能力](docs/PROGRESS.md)
+- [第三方项目接入计划](docs/08-外部项目集成指南.md)
+- [可执行与规划规则能力清单](rules/catalog.json)
+- [7个Agent专业Skills](.agents/skills/)
+
+> 请勿把真实公司网表、PCB、BOM、内部检查规则或设计资料上传到本公开仓库。单元测试全部使用虚构数据。
 
 ## 1. 项目愿景
 
