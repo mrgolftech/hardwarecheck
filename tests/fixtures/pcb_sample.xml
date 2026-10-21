@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IPC2581 version="synthetic-test">
+  <Stackup><Layer name="TOP"/><Layer name="BOT"/></Stackup>
+  <Step><Component refDes="U1"/></Step>
+</IPC2581>
