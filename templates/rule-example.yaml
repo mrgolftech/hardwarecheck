@@ -1,0 +1,45 @@
+# 非可执行示范：供硬件专家把检查要素表结构化时参考。
+# 所有标注示例均非真实企业规则；status/条件以实际规则引擎设计为准。
+rule_id: SCH-BOM-001
+rule_version: 0.1-draft
+title: BOM装配位号与原理图一致性检查（示例）
+category: schematic_bom_consistency
+description: 检查指定装配变体的BOM位号是否能映射到该版原理图设计对象。
+owner: unassigned
+status: draft
+scope:
+  design_revision: same_revision
+  assembly_variant: specified
+applicability:
+  require:
+    - schematic_component_inventory
+    - bom_refdes_inventory
+    - assembly_variant_id
+inputs:
+  - name: schematic_components
+    source: normalized_schematic
+  - name: bom_items
+    source: normalized_bom
+  - name: assembly_variant_id
+    source: project_requirements
+method:
+  type: python_deterministic
+  function: to_be_implemented
+  logic: >
+    在指定装配变体下求两个集合的差异，输出未映射位号与对应原始数据。
+    DNP、组合器件、多单元器件和已定义特殊物料须按专项规则处理。
+evidence_required:
+  - schematic_refdes
+  - bom_refdes
+  - source_file_and_revision
+  - assembly_variant
+outcomes:
+  matched: PASS
+  confirmed_violation: FAIL
+  ambiguous_mapping: NEEDS_REVIEW
+  missing_input: INSUFFICIENT_EVIDENCE
+  not_applicable: NOT_APPLICABLE
+severity: medium
+notes:
+  - 这是规则Schema草案，不可直接宣称已实现检查。
+  - FAIL需要独立核查集合映射及允许的设计例外。
