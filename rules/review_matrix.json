@@ -1,0 +1,859 @@
+{
+  "catalog_version": "0.4",
+  "scope": "OrCAD schematic / BOM / datasheet / Allegro-export review",
+  "meaning": "method=baseline_rule only when actual pre-existing rule executes; partial_tool only aids structural checking and NEVER indicates whole item PASS; guided requires human/Agent review and evidence",
+  "references": [
+    "https://github.com/Seeed-Studio/ai-skills/tree/main/skills/schematic-analyzer",
+    "https://github.com/Seeed-Studio/ai-skills/tree/main/skills/ee-datasheet-master",
+    "https://github.com/aklofas/kicad-happy",
+    "https://github.com/settchan2003-design/kicad-schematic-review-skill"
+  ],
+  "checks": [
+    {
+      "id": "EDA-01",
+      "category": "EDA",
+      "title": "核对网表完整性、版本、哈希和格式",
+      "required_evidence": "网表导出日志与原图",
+      "method": "assisted",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "EDA-02",
+      "category": "EDA",
+      "title": "核对层次网标、跨页同名网络及作用域",
+      "required_evidence": "原理图层次/端口映射",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "EDA-03",
+      "category": "EDA",
+      "title": "核对物理管脚号与逻辑功能、隐藏供电脚",
+      "required_evidence": "网表、PSTCHIP、器件pin table",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "EDA-04",
+      "category": "EDA",
+      "title": "区分No Connect标记、NC网络、常闭NC触点和DNP",
+      "required_evidence": "Capture原图及元件属性",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "EDA-05",
+      "category": "EDA",
+      "title": "同一物理引脚跨网冲突",
+      "required_evidence": "平面网表结构",
+      "method": "baseline_rule",
+      "implemented": true,
+      "automation_note": "由已有基础规则按具体适用条件执行"
+    },
+    {
+      "id": "EDA-06",
+      "category": "EDA",
+      "title": "单端网、孤立电气节点、非预期短接",
+      "required_evidence": "网表、设计意图、原图",
+      "method": "baseline_rule",
+      "implemented": true,
+      "automation_note": "由已有基础规则按具体适用条件执行"
+    },
+    {
+      "id": "EDA-07",
+      "category": "EDA",
+      "title": "器件型号、封装及多单元部件映射",
+      "required_evidence": "part list、BOM、封装库",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-01",
+      "category": "POWER",
+      "title": "识别输入电源及所有电源轨清单",
+      "required_evidence": "网表网名、供电脚及需求",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-02",
+      "category": "POWER",
+      "title": "逐级核实电源来源、转换器VIN/VOUT和目标电压",
+      "required_evidence": "pinmap、datasheet、原图",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-03",
+      "category": "POWER",
+      "title": "确认每个负载实际电源管脚及独立模拟/数字电源域",
+      "required_evidence": "VDD/AVDD/VCC引脚数据与网表",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-04",
+      "category": "POWER",
+      "title": "标出0Ω、磁珠、二极管、负载开关对电源树的影响",
+      "required_evidence": "BOM装配、器件连接与状态",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-05",
+      "category": "POWER",
+      "title": "检查多源供电、反灌、OR-ing/电源切换路径",
+      "required_evidence": "电源树与器件手册",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-06",
+      "category": "POWER",
+      "title": "输入电压工作范围与绝对最大额定值",
+      "required_evidence": "需求、手册min/max、输入变化",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-07",
+      "category": "POWER",
+      "title": "输出电压与下游负载容限",
+      "required_evidence": "电源树、负载供电规格",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-08",
+      "category": "POWER",
+      "title": "输出电流及稳态负载预算",
+      "required_evidence": "逐负载电流max、负载工作模式",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-09",
+      "category": "POWER",
+      "title": "转换效率、级联输入电流及整机功耗预算",
+      "required_evidence": "效率曲线、负载剖面、温度",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-10",
+      "category": "POWER",
+      "title": "启动浪涌、热插拔及软启动",
+      "required_evidence": "输入电容、限制电路、瞬态测试",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-11",
+      "category": "POWER",
+      "title": "上电/掉电顺序及域间反灌、倒灌",
+      "required_evidence": "时序要求、EN/PGOOD、波形",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-12",
+      "category": "POWER",
+      "title": "PGOOD/RESET/EN链路与拉电平、默认状态",
+      "required_evidence": "引脚属性、阈值、外围网络",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-13",
+      "category": "POWER",
+      "title": "电源冗余、掉电保持、后备电池切换",
+      "required_evidence": "OR-ing、电源监控及要求",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-14",
+      "category": "POWER",
+      "title": "LDO压差、负载/温度相关裕量",
+      "required_evidence": "Vin/Vout、dropout曲线、负载",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "POWER-15",
+      "category": "POWER",
+      "title": "LDO热耗、热阻、结温和降额",
+      "required_evidence": "Pd=(Vin-Vout)I、PCB热条件",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-16",
+      "category": "POWER",
+      "title": "DCDC反馈分压、电阻容差及输出精度",
+      "required_evidence": "Vref、反馈拓扑、阻值、容差",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-17",
+      "category": "POWER",
+      "title": "DCDC电感量、饱和电流、DCR、纹波",
+      "required_evidence": "数据手册推荐值和工况",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-18",
+      "category": "POWER",
+      "title": "DCDC输入/输出电容类型、容值、耐压及偏压降额",
+      "required_evidence": "实际电容型号、ESR、偏压曲线",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-19",
+      "category": "POWER",
+      "title": "自举BOOT、电荷泵和补偿网络",
+      "required_evidence": "推荐应用电路及器件参数",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-20",
+      "category": "POWER",
+      "title": "开关频率、噪声、同步与EMI风险",
+      "required_evidence": "手册、频谱限制、布局",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-21",
+      "category": "POWER",
+      "title": "输出纹波、负载瞬态、线性/负载调整率",
+      "required_evidence": "模拟/示波器、需求指标",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-22",
+      "category": "POWER",
+      "title": "电源回路稳定性、相位裕量和负载电容窗口",
+      "required_evidence": "Bode、补偿方案、手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-23",
+      "category": "POWER",
+      "title": "分域隔离、地参考、模拟电源滤波",
+      "required_evidence": "网表拓扑、模拟/数字分区",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-24",
+      "category": "POWER",
+      "title": "电容去耦覆盖率、靠近引脚程度及回流路径",
+      "required_evidence": "供电脚表、PCB坐标和层叠",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-25",
+      "category": "POWER",
+      "title": "过压欠压过流短路与热保护",
+      "required_evidence": "阈值/故障表、测试方案",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-26",
+      "category": "POWER",
+      "title": "电源故障恢复、打嗝、锁存和复位行为",
+      "required_evidence": "datasheet状态机、故障测试",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-27",
+      "category": "POWER",
+      "title": "电源测试点、测量接地与可维护性",
+      "required_evidence": "测试网络、PCB测试点",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-28",
+      "category": "POWER",
+      "title": "待机/睡眠功耗、漏电和电池续航",
+      "required_evidence": "负载状态、Iq、备用电路",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-29",
+      "category": "POWER",
+      "title": "铜箔/过孔/接插件的电流承载和温升",
+      "required_evidence": "Allegro铜几何、线宽、IPC计算",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "POWER-30",
+      "category": "POWER",
+      "title": "电源域依赖环路与不合理的多级级联",
+      "required_evidence": "经核验的VIN/VOUT映射",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "PROTECTION-01",
+      "category": "PROTECTION",
+      "title": "输入反接与电源极性保护",
+      "required_evidence": "连接器、MOSFET/二极管",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-02",
+      "category": "PROTECTION",
+      "title": "输入浪涌/电压尖峰/TVS选型",
+      "required_evidence": "瞬态波形、TVS VRWM/Vc",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-03",
+      "category": "PROTECTION",
+      "title": "ESD器件耐压、结电容及回路布局",
+      "required_evidence": "IEC等级、信号带宽、PCB",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-04",
+      "category": "PROTECTION",
+      "title": "熔断器/eFuse额定值、I2t及选择性",
+      "required_evidence": "最大电流、启动条件、手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-05",
+      "category": "PROTECTION",
+      "title": "高压隔离、爬电间隙和安规要求",
+      "required_evidence": "输入等级、PCB几何、标准",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-06",
+      "category": "PROTECTION",
+      "title": "对外接口热插拔、地电位差和异常电压",
+      "required_evidence": "接口规格、保护拓扑",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-07",
+      "category": "PROTECTION",
+      "title": "电感/继电器/电机反向能量泄放",
+      "required_evidence": "续流路径、驱动器手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-08",
+      "category": "PROTECTION",
+      "title": "电池充放电、电源路径和保护阈值",
+      "required_evidence": "电池/BMS、充电芯片数据",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PROTECTION-09",
+      "category": "PROTECTION",
+      "title": "功率MOSFET VGS/VDS、SOA及死区裕量",
+      "required_evidence": "驱动波形、SOA、安全裕量",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-01",
+      "category": "CLOCK",
+      "title": "时钟源拓扑、主备时钟与频率准确度",
+      "required_evidence": "时钟树、频率/抖动需求",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-02",
+      "category": "CLOCK",
+      "title": "晶体负载电容、ESR和起振裕量",
+      "required_evidence": "晶体及MCU振荡器手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-03",
+      "category": "CLOCK",
+      "title": "差分时钟端接、摆幅与抖动",
+      "required_evidence": "时钟源接收器规格及布局",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-04",
+      "category": "CLOCK",
+      "title": "复位默认态、阈值、上拉和复位电路",
+      "required_evidence": "上电时序、reset引脚",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-05",
+      "category": "CLOCK",
+      "title": "Boot strap上下拉与复用引脚状态",
+      "required_evidence": "Boot模式表、采样窗口",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "CLOCK-06",
+      "category": "CLOCK",
+      "title": "看门狗、故障保护和紧急复位链路",
+      "required_evidence": "系统功能要求、WDT芯片",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-01",
+      "category": "DIGITAL",
+      "title": "UART/SBUS方向、电平、反相及帧格式",
+      "required_evidence": "MCU复用表、接口电平、固件",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-02",
+      "category": "DIGITAL",
+      "title": "I2C上拉、总线电容、上升时间和地址冲突",
+      "required_evidence": "上拉阻值、器件地址和电压",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-03",
+      "category": "DIGITAL",
+      "title": "SPI主从、片选、线长和电平域",
+      "required_evidence": "片选映射、时序表、PCB",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-04",
+      "category": "DIGITAL",
+      "title": "RS485终端、偏置、方向控制与隔离",
+      "required_evidence": "收发器手册、拓扑",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-05",
+      "category": "DIGITAL",
+      "title": "CAN终端、共模保护和失效保护",
+      "required_evidence": "线缆拓扑、终端值与收发器",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-06",
+      "category": "DIGITAL",
+      "title": "GPIO输入容限、驱动能力与总负载",
+      "required_evidence": "VOH/VOL、VIH/VIL、总负载",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-07",
+      "category": "DIGITAL",
+      "title": "GPIO默认态和跨电源域反灌",
+      "required_evidence": "复位态、上电域、保护电路",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-08",
+      "category": "DIGITAL",
+      "title": "调试接口SWD/JTAG/串口访问与隔离",
+      "required_evidence": "调试口、量产与安全需求",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "DIGITAL-09",
+      "category": "DIGITAL",
+      "title": "中断、唤醒、开漏及上下拉需求",
+      "required_evidence": "芯片pinmux、时序图",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-01",
+      "category": "HIGHSPEED",
+      "title": "USB CC/角色、ESD、VBUS及阻抗",
+      "required_evidence": "USB Type-C规范、原理图、PCB",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-02",
+      "category": "HIGHSPEED",
+      "title": "以太网PHY时钟、磁性器件、MDI端接",
+      "required_evidence": "PHY手册、RJ45/磁件",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-03",
+      "category": "HIGHSPEED",
+      "title": "MIPI CSI/DSI lane分配、供电和时钟",
+      "required_evidence": "主从lane映射、PHY规格",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-04",
+      "category": "HIGHSPEED",
+      "title": "PCIe参考时钟、复位、PERST和侧带",
+      "required_evidence": "PCIe规范、芯片手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-05",
+      "category": "HIGHSPEED",
+      "title": "DDR/LPDDR地址映射、供电、终端和时序",
+      "required_evidence": "原理图、布局约束、DDR规格",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-06",
+      "category": "HIGHSPEED",
+      "title": "差分对阻抗、长度匹配、回流参考",
+      "required_evidence": "PCB几何/仿真结果",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-07",
+      "category": "HIGHSPEED",
+      "title": "时钟/高速信号跨电源隔离和EMC",
+      "required_evidence": "域供电、隔离器、PCB",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "HIGHSPEED-08",
+      "category": "HIGHSPEED",
+      "title": "高速接口连接器选型、pinout及串扰",
+      "required_evidence": "连接器S参数与板级约束",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-01",
+      "category": "ANALOG",
+      "title": "ADC参考源、输入共模和量程",
+      "required_evidence": "ADC引脚及datasheet",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-02",
+      "category": "ANALOG",
+      "title": "ADC前端RC抗混叠、采样保持驱动",
+      "required_evidence": "采样时间、阻抗与噪声",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-03",
+      "category": "ANALOG",
+      "title": "运放输入输出摆幅、带宽、稳定性",
+      "required_evidence": "运放手册、闭环增益与负载",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-04",
+      "category": "ANALOG",
+      "title": "分压电阻精度、功率和容差预算",
+      "required_evidence": "阻值、最大电压、等级",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-05",
+      "category": "ANALOG",
+      "title": "分流电阻功耗、Kelvin采样和共模",
+      "required_evidence": "电流范围、布线、放大器",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "ANALOG-06",
+      "category": "ANALOG",
+      "title": "传感器模拟地/数字地及参考隔离",
+      "required_evidence": "传感器接口、PCB拓扑",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-01",
+      "category": "PCB",
+      "title": "电源回路/开关节点SW与FB敏感布线",
+      "required_evidence": "PCB铜连接、回流路径、布局",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-02",
+      "category": "PCB",
+      "title": "去耦靠近电源脚、过孔数和回流地",
+      "required_evidence": "Allegro坐标、层叠、板图",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-03",
+      "category": "PCB",
+      "title": "电源线宽/铜厚/过孔数量/温升",
+      "required_evidence": "IPC与板厂工艺、铜几何",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-04",
+      "category": "PCB",
+      "title": "高电流路径电压降与电源完整性",
+      "required_evidence": "PDN模型/IBIS/实测",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-05",
+      "category": "PCB",
+      "title": "阻抗/差分线间距/等长/端接",
+      "required_evidence": "Allegro布线数据、SI要求",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-06",
+      "category": "PCB",
+      "title": "ESD/保护器件放置与机壳地路径",
+      "required_evidence": "PCB坐标、接口结构",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-07",
+      "category": "PCB",
+      "title": "热焊盘、散热过孔、温升和散热约束",
+      "required_evidence": "PCB叠层、封装、热仿真",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "PCB-08",
+      "category": "PCB",
+      "title": "电源与射频/模拟/时钟隔离和地回流",
+      "required_evidence": "PCB功能分区、相邻层",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "BOM-01",
+      "category": "BOM",
+      "title": "原理图与BOM位号数量一致",
+      "required_evidence": "CSV BOM/网表",
+      "method": "baseline_rule",
+      "implemented": true,
+      "automation_note": "由已有基础规则按具体适用条件执行"
+    },
+    {
+      "id": "BOM-02",
+      "category": "BOM",
+      "title": "所有关键器件MPN、等级、封装、供货状态",
+      "required_evidence": "器件库、BOM、手册",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "BOM-03",
+      "category": "BOM",
+      "title": "电阻阻值、电容耐压/偏压、温漂和降额",
+      "required_evidence": "BOM、料号、datasheet",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "BOM-04",
+      "category": "BOM",
+      "title": "DNP/替代料/装配版本与电路功能",
+      "required_evidence": "装配BOM及版本说明",
+      "method": "partial_tool",
+      "implemented": false,
+      "automation_note": "仅提供部分结构/约束辅助，不能对整项自动判定PASS"
+    },
+    {
+      "id": "BOM-05",
+      "category": "BOM",
+      "title": "极性器件、封装方向、Pin1及焊盘标识",
+      "required_evidence": "元件PCB库、装配图",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "BOM-06",
+      "category": "BOM",
+      "title": "测试点/工装/可制造性与测试覆盖",
+      "required_evidence": "生产测试规范、原理图",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "VERIFICATION-01",
+      "category": "VERIFICATION",
+      "title": "人工核对每个关键电源芯片供电脚/地/FB/EN/PG",
+      "required_evidence": "原图、芯片管脚表、网表",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "VERIFICATION-02",
+      "category": "VERIFICATION",
+      "title": "对外接口异常测试和边界工况",
+      "required_evidence": "接口规定、测试计划",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "VERIFICATION-03",
+      "category": "VERIFICATION",
+      "title": "高低温、电压上下限及温升联合工况",
+      "required_evidence": "环境规范、测试计划",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "VERIFICATION-04",
+      "category": "VERIFICATION",
+      "title": "问题证据、严重度、设计闭环和签核",
+      "required_evidence": "设计文件版本、评审记录",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    },
+    {
+      "id": "VERIFICATION-05",
+      "category": "VERIFICATION",
+      "title": "与OrCAD ERC及Allegro DRC结果交叉对照",
+      "required_evidence": "EDA原生检查报告",
+      "method": "guided",
+      "implemented": false,
+      "automation_note": "需Agent逐项根据证据复核，当前无自动判定规则"
+    }
+  ]
+}

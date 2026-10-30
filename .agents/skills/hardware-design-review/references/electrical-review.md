@@ -21,3 +21,8 @@ Apply only applicable checks. Each entry requires design evidence and, where par
 5. A missing datasheet or uncertain pin assignment is not a FAIL; use `INSUFFICIENT_EVIDENCE`.
 6. If critical parser errors exist, isolate impacted circuits and report `ERROR` or `NEEDS_REVIEW`.
 7. Never use PDF keyword-search hits as proof of graph/table content without visual or manual verification.
+
+
+## 扩展后的工程审查清单
+
+使用 `rules/review_matrix.json` / `hardwarecheck checklist` 获取完整、分领域的审查项，每条包含证据要求和实现程度。先完成电源树再逐块分析信号接口；不能只按网名推断功能，参见 `power-tree.md` 和 `checklist-guide.md`。

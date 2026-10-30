@@ -1,6 +1,6 @@
 ---
 name: hardware-design-review
-description: Review OrCAD Capture pstxnet.dat/pstxprt.dat netlists, BOM CSV, datasheets and Allegro exports. Use for hardware schematic review, UART/SBUS or other interface debugging, 0-ohm link tracing, DNP variants, evidence-backed electrical risk reports. Do not claim full ERC/DRC or unverified PCB analysis.
+description: Review OrCAD Capture pstxnet.dat/pstxprt.dat netlists, BOM CSV, datasheets and Allegro exports. Use for schematic review, power tree/rail tracing, converter VIN/VOUT and load budgets, power sequencing, decoupling, UART/SBUS and other interfaces, 0-ohm/DNP variants and evidence-backed electrical risks. Do not claim full ERC/DRC or unverified PCB analysis.
 ---
 
 # Hardware Design Review — Codex entry skill
@@ -42,7 +42,28 @@ python -m hardwarecheck review --netlist "C:\Approved\pstxnet.dat" --parts "C:\A
 python -m hardwarecheck trace-zero --netlist "C:\Approved\pstxnet.dat" --parts "C:\Approved\pstxprt.dat" --bom "C:\Approved\bom.csv" --net UART_TX
 ```
 
-## 3. Engineering interpretation
+## 3. Mandatory power tree review for board-level requests
+
+- Run `power-tree` without annotations when netlist is available, to extract only `candidate_rails`. **Never draw a directed supply tree, assign voltages or claim a rail powers a chip solely from power-like net names.**
+- For a directed tree/quantitative analysis, first validate converter **physical VIN/VOUT pin numbers** and every critical load's **physical supply pin** from original schematic + part datasheet; create a local JSON mapping and run `power-tree --power-spec ...`.
+- Inspect multi-supply, DNP, 0Ω, ferrite, diode, power mux, PMIC and sequencing separately: flat-net tool never traverses these internal paths. `trace-zero` may help for DNP-configured 0Ω only.
+- Evaluate input range, output voltage versus load tolerance, direct annotated load/current capacity, LDO headroom; these are **partial, annotation-based risk hints** only. Upstream converter current, ripple, stability, EN/PGOOD timing, feedback, full load completeness and PCB power integrity still require explicit design and datasheet verification.
+- Read `references/power-tree.md` and include power tree table/diagram + unknowns when the user requests a full schematic audit. If no verified mapping, output candidate-only and the missing evidence, not an invented power tree.
+
+```powershell
+python -m hardwarecheck power-tree --netlist tests/fixtures/power_tree_net.dat --parts tests/fixtures/power_tree_parts.dat
+python -m hardwarecheck power-tree --netlist tests/fixtures/power_tree_net.dat --parts tests/fixtures/power_tree_parts.dat --power-spec tests/fixtures/power_tree_spec.json
+python -m hardwarecheck checklist --category POWER
+```
+
+## 4. Comprehensive checklist by relevant domain
+
+- The catalog `rules/review_matrix.json` is the single source for expanded review items. Query it with `python -m hardwarecheck checklist --category POWER` or other categories `EDA/PROTECTION/CLOCK/DIGITAL/HIGHSPEED/ANALOG/PCB/BOM/VERIFICATION`.
+- For whole-board review, enumerate all applicable categories, selecting/checking items with source evidence, status and gaps. For targeted questions, load only the relevant check category; avoid exhausting model context.
+- `baseline_rule` identifies limited existing simple rules; `partial_tool` gives evidence hints **not full automatic checks**; `guided` must be performed using schematic, datasheets, requirements, and optional simulation/measurement.
+- Read `references/checklist-guide.md`. Track per-item `executed` / `not executed` / `not applicable` and never fabricate PASS for missing data.
+
+## 5. Engineering interpretation
 
 For each relevant circuit: identify nets/components and primary purpose, then examine electrical constraints:
 
@@ -54,7 +75,7 @@ For each relevant circuit: identify nets/components and primary purpose, then ex
 
 Read `references/electrical-review.md` for review categories, applicability gates and evidence handling. Use `pdf-search` only to locate relevant datasheet passages. Min/typ/max, units, operating conditions, part revisions, and page numbers require direct validation; PDF keyword hits cannot prove an electrical claim.
 
-## 4. Findings and report gate
+## 6. Findings and report gate
 
 Write candidate findings with `rule_id`, status, severity, subject, evidence and statement; validate with `validate-findings`. Structural acceptance **does not** authenticate datasheet quotations or the engineering conclusion. Read `references/reporting.md` and use `assets/report-template.md`.
 
@@ -62,11 +83,12 @@ Use one status per executed rule: `PASS` (that rule only), `FAIL` (structurally 
 
 Always provide: scope, input/hash/variant, parsing exceptions, inspected circuits and rules, evidence-backed findings with actual refdes/pin/net/datasheet references, open questions, remediation/testing suggestions, and human sign-off status. Explicitly distinguish deterministic facts, AI interpretations, and manual verification requirements.
 
-## 5. Smoke-test with public synthetic fixtures
+## 7. Smoke-test with public synthetic fixtures
 
 ```powershell
 python -m unittest discover -s tests -v
 python -m hardwarecheck trace-zero --netlist tests/fixtures/zero_ohm_net.dat --parts tests/fixtures/zero_ohm_parts.dat --bom tests/fixtures/zero_ohm_bom.csv --net UART_TX
+python -m hardwarecheck power-tree --netlist tests/fixtures/power_tree_net.dat --parts tests/fixtures/power_tree_parts.dat --power-spec tests/fixtures/power_tree_spec.json
 ```
 
 **Do not claim success unless commands actually ran.** See `docs/PROGRESS.md` for what was submitted, locally tested and actually verified against real OrCAD/Allegro.
