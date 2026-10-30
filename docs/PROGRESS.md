@@ -65,10 +65,12 @@ GitHub仓库是公开仓库。样例必须完全虚构；真实OrCAD网表、All
 | 项目 | 状态 | 说明 |
 |---|---|---|
 | Codex 综合 `hardware-design-review` Skill | 已提交分支，待Codex真实触发验证 | 标准路径 `.agents/skills/hardware-design-review/SKILL.md`，含方法引用与报告模板 |
-| 0Ω电阻装配状态路径追踪 | 已提交分支，待CI结果 | `src/hardwarecheck/connectivity.py`、CLI `trace-zero`；严格区分已明确装配与可能连通 |
+| 0Ω电阻装配状态路径追踪 | 已提交分支，2026-10-30 CI通过 | `src/hardwarecheck/connectivity.py`、CLI `trace-zero`；严格区分已明确装配与可能连通 |
 | DNP、BOM未知装配、阻值冲突 | 已提交分支，合成数据覆盖 | 仅处理受支持的CSV字段值，不推断真实电路装配 |
-| 合成网表、BOM、自动测试 | 已提交分支，待CI结果 | `tests/test_connectivity.py` + 合成fixtures |
+| 合成网表、BOM、自动测试 | 已提交分支，2026-10-30 CI通过 | `tests/test_connectivity.py` + 合成fixtures |
 | 真实OrCAD DAT/PSTXPRT兼容性 | 未验证 | 必须在授权环境用真实样本核对 |
 | 真实Allegro几何、电平/极性、数据手册参数电气规则 | 未实现/未验证 | 不可用Skill提示词代替算法与测试 |
 
 注意：本节为 **V0.3开发分支** 状态，旧V0.2-alpha表格历史口径保留，不能由新代码提交直接推断全套测试通过。
+
+CI 验证：https://github.com/mrgolftech/hardwarecheck/actions/runs/41080228107 （PR #1，tests job success）。此处只证明合成测试和CLI smoke通过；尚未验证Codex实际调用和真实EDA解析。
