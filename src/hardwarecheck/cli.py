@@ -11,6 +11,7 @@ from .report import validate_findings
 from .pcb import summarize_pcb
 from .datasheet import search_pdf
 from .eco import compare_designs
+from .connectivity import trace_zero_ohm
 
 
 def parser() -> argparse.ArgumentParser:
@@ -27,6 +28,11 @@ def parser() -> argparse.ArgumentParser:
         if command in ("component", "net"):
             x.add_argument("name", help="reference designator or network name")
         x.add_argument("--output", help="JSON report path (no original input overwritten)")
+    x = sub.add_parser("trace-zero")
+    x.add_argument("--netlist", required=True)
+    x.add_argument("--parts")
+    x.add_argument("--bom", help="optional manufacturing-variant CSV BOM")
+    x.add_argument("--net", required=True, help="existing starting net name")
     x = sub.add_parser("pdf-search")
     x.add_argument("--pdf", required=True)
     x.add_argument("--term", required=True)
@@ -43,6 +49,10 @@ def parser() -> argparse.ArgumentParser:
 
 
 def execute(args: argparse.Namespace) -> dict:
+    if args.command == "trace-zero":
+        design = build_design(args.netlist, args.parts)
+        bom = parse_bom_csv(args.bom) if args.bom else None
+        return trace_zero_ohm(design, args.net, bom)
     if args.command == "pdf-search":
         return search_pdf(args.pdf, args.term, args.max_hits)
     if args.command == "pcb-summary":

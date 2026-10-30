@@ -1,7 +1,7 @@
 # hardwarecheck — 基于通用 Agent 的硬件设计智能审查
 
-> 项目状态：V0.2-alpha 工程骨架已提交（真实EDA尚未验证） · 方案版本：V0.2 · 更新：2026-10-22  
-> 重要声明：当前仓库包含**方案文档、7个Agent Skills和初版Python只读CLI**。平面网表解析、基础BOM差异等已有实现和合成测试用例，但尚未在真实OrCAD/Allegro项目验证；完整PCB几何检查、电气规则与实际缺陷检出率仍未实现或未验证。AI输出不能替代正式的硬件评审、EDA ERC/DRC、必要仿真或实测。
+> 项目状态：V0.3 Skill与0Ω路径原型已完成合成CI验证（真实EDA尚未验证） · 方案版本：V0.3 · 更新：2026-10-30  
+> 重要声明：当前仓库包含**方案文档、8个Agent Skills和初版Python只读CLI**。平面网表解析、基础BOM差异等已有实现和合成测试用例，但尚未在真实OrCAD/Allegro项目验证；完整PCB几何检查、电气规则与实际缺陷检出率仍未实现或未验证。AI输出不能替代正式的硬件评审、EDA ERC/DRC、必要仿真或实测。
 
 ## 快速开始（V0.2-alpha）
 
@@ -22,7 +22,7 @@ python -m hardwarecheck review --netlist tests/fixtures/pstxnet.dat --parts test
 - [当前进度、已完成与待验证能力](docs/PROGRESS.md)
 - [第三方项目接入计划](docs/08-外部项目集成指南.md)
 - [可执行与规划规则能力清单](rules/catalog.json)
-- [7个Agent专业Skills](.agents/skills/)
+- [8个Agent专业Skills](.agents/skills/)
 
 > 请勿把真实公司网表、PCB、BOM、内部检查规则或设计资料上传到本公开仓库。单元测试全部使用虚构数据。
 
@@ -112,3 +112,19 @@ OrCAD 网表 / BOM / Datasheet / 需求 / Allegro 导出
 4. 在通用 Agent 中加载专业 Skill，优先使用只读工具执行首轮审查。
 
 > 研发产出定位：**硬件专业知识工程化、可验证的专用审查方法和质量闭环**；不将通用 Agent 的已有能力包装为自研算法。
+
+
+## 2026-10-30 V0.3 开发分支：Codex 综合 Skill 与 0Ω 路径工具
+
+- 新增可被 Codex 从项目根目录发现的 `.agents/skills/hardware-design-review/SKILL.md`；这是综合工作流入口，原7个专项Skills仍然保留。
+- 新增 `hardwarecheck trace-zero --netlist ... --parts ... --bom ... --net UART_TX`，按BOM装配状态区分 `confirmed_reachable`（明确装配字段）与 `possible_reachable`（还包含假设装配的路径），报告DNP及阻值/装配冲突。
+- 不对物理走线、方向、反相、电平、完整层次网表及真实PCB实施推断；现有四条基础规则未扩展为完整ERC/DRC。
+- 新增完全合成的0Ω/DNP/UART连接样例回归测试；2026-10-30 GitHub Actions CI 已通过，但**不等于真实Cadence网表适配已验证**。
+- 演示命令：
+
+```powershell
+python -m unittest discover -s tests -v
+python -m hardwarecheck trace-zero --netlist tests/fixtures/zero_ohm_net.dat --parts tests/fixtures/zero_ohm_parts.dat --bom tests/fixtures/zero_ohm_bom.csv --net UART_TX
+```
+
+完整边界见 `.agents/skills/hardware-design-review/references/connectivity.md` 和 `docs/PROGRESS.md`。

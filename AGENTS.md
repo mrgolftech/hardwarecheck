@@ -60,3 +60,8 @@ P3：跨域检查、ECO和质量反馈。
 ## 面向用户的沟通
 
 优先说明可交付的工程事实、验证范围、遗漏条件、风险和下一步建议；区分开源已实现能力、本仓库已实现能力与拟建设能力。不要泛化宣传“全自动硬件审查”“AI保证一次投板成功”。
+
+
+## V0.3 开发分支综合 Skill
+
+Codex 入口：`.agents/skills/hardware-design-review/SKILL.md`。当请求涵盖多类原理图/BOM/接口分析时优先从此入口开始，调用 `hardwarecheck trace-zero` 实施组装状态感知的0Ω网络追踪。`possible_reachable` 不表示真实装配连通，`confirmed_reachable` 也只是明确BOM字段下的拓扑推导，不是实际硬件测量。沿用已有的专业规则和证据报告约束；真实OrCAD/Allegro仍需验证。
