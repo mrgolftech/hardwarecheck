@@ -112,3 +112,19 @@ OrCAD 网表 / BOM / Datasheet / 需求 / Allegro 导出
 4. 在通用 Agent 中加载专业 Skill，优先使用只读工具执行首轮审查。
 
 > 研发产出定位：**硬件专业知识工程化、可验证的专用审查方法和质量闭环**；不将通用 Agent 的已有能力包装为自研算法。
+
+
+## 2026-10-30 V0.3 开发分支：Codex 综合 Skill 与 0Ω 路径工具
+
+- 新增可被 Codex 从项目根目录发现的 `.agents/skills/hardware-design-review/SKILL.md`；这是综合工作流入口，原7个专项Skills仍然保留。
+- 新增 `hardwarecheck trace-zero --netlist ... --parts ... --bom ... --net UART_TX`，按BOM装配状态区分 `confirmed_reachable`（明确装配字段）与 `possible_reachable`（还包含假设装配的路径），报告DNP及阻值/装配冲突。
+- 不对物理走线、方向、反相、电平、完整层次网表及真实PCB实施推断；现有四条基础规则未扩展为完整ERC/DRC。
+- 新增完全合成的0Ω/DNP/UART连接样例回归测试；**不等于真实Cadence网表适配已验证**。
+- 演示命令：
+
+```powershell
+python -m unittest discover -s tests -v
+python -m hardwarecheck trace-zero --netlist tests/fixtures/zero_ohm_net.dat --parts tests/fixtures/zero_ohm_parts.dat --bom tests/fixtures/zero_ohm_bom.csv --net UART_TX
+```
+
+完整边界见 `.agents/skills/hardware-design-review/references/connectivity.md` 和 `docs/PROGRESS.md`。

@@ -11,8 +11,10 @@ from collections import deque
 _VALUE_KEYS = ("VALUE", "VAL", "RESISTANCE", "阻值")
 _DNP_KEYS = ("DNP", "DNS", "DO_NOT_POPULATE", "DO NOT POPULATE", "不贴装")
 _FIT_KEYS = ("FITTED", "POPULATED", "POPULATE", "MOUNTED", "装配", "贴装")
-_YES = {"Y", "YES", "TRUE", "1", "DNP", "DNS", "NO FIT", "NOT FITTED", "不贴", "不装", "否"}
-_NO = {"N", "NO", "FALSE", "0", "FITTED", "POPULATED", "装", "贴", "是"}
+_DNP_YES = {"Y", "YES", "TRUE", "1", "DNP", "DNS", "NO FIT", "NOT FITTED", "不贴", "不装", "是"}
+_DNP_NO = {"N", "NO", "FALSE", "0", "FITTED", "POPULATED", "装", "贴", "否"}
+_FIT_YES = {"Y", "YES", "TRUE", "1", "FITTED", "POPULATED", "装", "贴", "是"}
+_FIT_NO = {"N", "NO", "FALSE", "0", "DNP", "DNS", "NO FIT", "NOT FITTED", "不贴", "不装", "否"}
 _UNKNOWN = {"", "-", "NA", "N/A", "UNKNOWN", "TBD", "?"}
 
 
@@ -45,9 +47,9 @@ def _population(attrs: dict, listed: bool) -> tuple[str, str]:
             flag = attrs[key].upper()
             if flag in _UNKNOWN:
                 continue
-            if flag in _YES:
+            if flag in _DNP_YES:
                 flags.append("explicit_dnp")
-            elif flag in _NO:
+            elif flag in _DNP_NO:
                 flags.append("explicit_fitted")
             else:
                 return "unknown", "unrecognized DNP field: " + key
@@ -56,17 +58,10 @@ def _population(attrs: dict, listed: bool) -> tuple[str, str]:
             flag = attrs[key].upper()
             if flag in _UNKNOWN:
                 continue
-            if flag in _YES or flag == "是":
-                # Some "_YES" tokens are DNP-specific. For FIT fields accept only yes-like.
-                if flag in {"NO FIT", "NOT FITTED", "DNP", "DNS", "不贴", "不装", "否"}:
-                    flags.append("explicit_dnp")
-                else:
-                    flags.append("explicit_fitted")
-            elif flag in _NO:
-                if flag in {"FITTED", "POPULATED", "装", "贴", "是"}:
-                    flags.append("explicit_fitted")
-                else:
-                    flags.append("explicit_dnp")
+            if flag in _FIT_YES:
+                flags.append("explicit_fitted")
+            elif flag in _FIT_NO:
+                flags.append("explicit_dnp")
             else:
                 return "unknown", "unrecognized fitted field: " + key
     if len(set(flags)) > 1:
