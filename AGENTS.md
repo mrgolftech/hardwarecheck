@@ -65,3 +65,8 @@ P3：跨域检查、ECO和质量反馈。
 ## V0.3 开发分支综合 Skill
 
 Codex 入口：`.agents/skills/hardware-design-review/SKILL.md`。当请求涵盖多类原理图/BOM/接口分析时优先从此入口开始，调用 `hardwarecheck trace-zero` 实施组装状态感知的0Ω网络追踪。`possible_reachable` 不表示真实装配连通，`confirmed_reachable` 也只是明确BOM字段下的拓扑推导，不是实际硬件测量。沿用已有的专业规则和证据报告约束；真实OrCAD/Allegro仍需验证。
+
+
+## V0.4 电源树分析与综合清单
+
+全板原理图审查先用 `hardwarecheck power-tree` 获取候选电源网名；只有在用户/Agent经原图和datasheet核对后，才允许用 `--power-spec` 的物理VIN/VOUT/负载pinmap形成有向图。Power-tool所报告的电压和电流全部是**外部声明**，没有datasheet真实性认证。`hardwarecheck checklist` 的`partial_tool`/`guided`不可被标记为已自动PASS。检查详细规定见 `.agents/skills/hardware-design-review/references/power-tree.md` 与 `checklist-guide.md`。

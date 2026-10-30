@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from .cadence import build_design, get_component, get_net
+from .cadence import build_design, get_component, get_net, file_digest
 from .bom import parse_bom_csv, compare_bom
 from .rules import run_rules
 from .report import validate_findings
@@ -12,6 +12,8 @@ from .pcb import summarize_pcb
 from .datasheet import search_pdf
 from .eco import compare_designs
 from .connectivity import trace_zero_ohm
+from .power import analyze_power_tree
+from .review_catalog import query_checklist
 
 
 def parser() -> argparse.ArgumentParser:
@@ -33,6 +35,12 @@ def parser() -> argparse.ArgumentParser:
     x.add_argument("--parts")
     x.add_argument("--bom", help="optional manufacturing-variant CSV BOM")
     x.add_argument("--net", required=True, help="existing starting net name")
+    x = sub.add_parser("power-tree")
+    x.add_argument("--netlist", required=True)
+    x.add_argument("--parts")
+    x.add_argument("--power-spec", help="optional reviewed power pin and load JSON mapping")
+    x = sub.add_parser("checklist")
+    x.add_argument("--category", help="EDA/POWER/PROTECTION/CLOCK/DIGITAL/HIGHSPEED/ANALOG/PCB/BOM/VERIFICATION")
     x = sub.add_parser("pdf-search")
     x.add_argument("--pdf", required=True)
     x.add_argument("--term", required=True)
@@ -49,6 +57,20 @@ def parser() -> argparse.ArgumentParser:
 
 
 def execute(args: argparse.Namespace) -> dict:
+    if args.command == "checklist":
+        return query_checklist(args.category)
+    if args.command == "power-tree":
+        design = build_design(args.netlist, args.parts)
+        spec = None
+        if args.power_spec:
+            path = Path(args.power_spec)
+            if path.stat().st_size > 2_000_000:
+                raise ValueError("power spec JSON exceeds 2 MB")
+            spec = json.loads(path.read_text(encoding="utf-8-sig"))
+        report = analyze_power_tree(design, spec)
+        if args.power_spec:
+            report["annotation_source"] = file_digest(args.power_spec)
+        return report
     if args.command == "trace-zero":
         design = build_design(args.netlist, args.parts)
         bom = parse_bom_csv(args.bom) if args.bom else None

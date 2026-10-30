@@ -128,3 +128,23 @@ python -m hardwarecheck trace-zero --netlist tests/fixtures/zero_ohm_net.dat --p
 ```
 
 完整边界见 `.agents/skills/hardware-design-review/references/connectivity.md` 和 `docs/PROGRESS.md`。
+
+
+## V0.4 — 电源树与扩展专业检查清单
+
+- 添加 `hardwarecheck power-tree`：无 `--power-spec` 时仅提取名字类似供电轨的**候选网络**；有 `--power-spec` 时校验人工核对的物理VIN/VOUT和负载引脚，输出声明驱动的多级有向电源树与部分风险提示。
+- 新增 `hardwarecheck checklist --category POWER`，以 `rules/review_matrix.json` 管理分领域检查项，并明确 `baseline_rule`、`partial_tool`、`guided` 的边界。
+- 对 V0.4 的电源树增加完全虚构的多级12V→5V→3.3V→1.8V测试样本；**没有声称真实OrCAD和datasheet已验证**。
+- 参考资料及电源树注释契约：`.agents/skills/hardware-design-review/references/power-tree.md`；工程全量检查用法：`references/checklist-guide.md`。
+
+```powershell
+python -m hardwarecheck power-tree --netlist tests/fixtures/power_tree_net.dat --parts tests/fixtures/power_tree_parts.dat
+python -m hardwarecheck power-tree --netlist tests/fixtures/power_tree_net.dat --parts tests/fixtures/power_tree_parts.dat --power-spec tests/fixtures/power_tree_spec.json
+python -m hardwarecheck checklist --category POWER
+python -m unittest discover -s tests -v
+```
+
+不带`--power-spec`无法推断器件真实供电方向、电压和负载电流；提供映射时也仅校核网表连接和声明值之间的内部一致性，不能替代额定参数验证、电源仿真、ERC/DRC、时序与温升测试。
+
+
+V0.4 验证记录：GitHub PR #2 的26项合成回归测试通过（https://github.com/mrgolftech/hardwarecheck/actions/runs/41088106995）；真实OrCAD电源树的管脚映射和datasheet核对仍待工程验证。`power-tree --power-spec` 输出记录输入映射文件的 SHA-256 以便审计。
