@@ -80,11 +80,11 @@ CI 验证：https://github.com/mrgolftech/hardwarecheck/actions/runs/41080228107
 
 | 模块 | 状态 | 范围/限制 |
 |---|---|---|
-| `power-tree` 候选电源轨清点 | 代码已提交，待CI核验 | 基于网名启发式匹配，不自动确认供电域 |
-| 有向多级电源树和参数比对 | 代码已提交，待CI核验 | 必须由用户提供经手册核对的converter和load pinmap JSON；不自动判定真实方向 |
-| 输入电压范围、LDO压差、负载电压、直接负载电流预算、驱动冲突、环路 | 代码已提交，待CI核验 | 仅核对人工注释与物理连接，输出SUSPECTED；无负载完整性和上游效率计算 |
-| `review_matrix.json` 跨领域审查清单 | 已编制，待CI核验 | 分类指导检查，**不是全部可执行自动规则** |
-| Codex Skill及报告模板 | 已更新，待实测 | 要求全板审查先做电源树并记录不足 |
+| `power-tree` 候选电源轨清点 | 代码已提交，26项合成CI通过 | 基于网名启发式匹配，不自动确认供电域 |
+| 有向多级电源树和参数比对 | 代码已提交，26项合成CI通过 | 必须由用户提供经手册核对的converter和load pinmap JSON；不自动判定真实方向 |
+| 输入电压范围、LDO压差、负载电压、直接负载电流预算、驱动冲突、环路 | 代码已提交，26项合成CI通过 | 仅核对人工注释与物理连接，输出SUSPECTED；无负载完整性和上游效率计算 |
+| `review_matrix.json` 跨领域审查清单 | 已编制，26项合成CI通过 | 分类指导检查，**不是全部可执行自动规则** |
+| Codex Skill及报告模板 | 已更新，Codex触发仍待实测 | 要求全板审查先做电源树并记录不足 |
 | 真实OrCAD解析和手册/PCB证据自动校验 | 仍未验证/未实现 | 需真实获批项目人工金标准 |
 
-开源参考借鉴Seeed schematic-analyzer、ee-datasheet-master、kicad-happy和kicad-schematic-review-skill的检查思路；未引入第三方实现代码。CI结果待记录，不能宣称运行通过。
+开源参考借鉴Seeed schematic-analyzer、ee-datasheet-master、kicad-happy和kicad-schematic-review-skill的检查思路；未引入第三方实现代码。CI合成测试26项通过（PR #2：https://github.com/mrgolftech/hardwarecheck/actions/runs/41088106995）；仍未验证真实EDA和实际Agent端自动调用。

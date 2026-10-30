@@ -145,3 +145,6 @@ python -m unittest discover -s tests -v
 ```
 
 不带`--power-spec`无法推断器件真实供电方向、电压和负载电流；提供映射时也仅校核网表连接和声明值之间的内部一致性，不能替代额定参数验证、电源仿真、ERC/DRC、时序与温升测试。
+
+
+V0.4 验证记录：GitHub PR #2 的26项合成回归测试通过（https://github.com/mrgolftech/hardwarecheck/actions/runs/41088106995）；真实OrCAD电源树的管脚映射和datasheet核对仍待工程验证。`power-tree --power-spec` 输出记录输入映射文件的 SHA-256 以便审计。

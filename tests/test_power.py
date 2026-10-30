@@ -87,7 +87,10 @@ class PowerTreeTests(unittest.TestCase):
                "--power-spec", str(BASE / "power_tree_spec.json")]
         r = subprocess.run(cmd, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertEqual(json.loads(r.stdout)["mode"], "annotated_power_tree")
+        output = json.loads(r.stdout)
+        self.assertEqual(output["mode"], "annotated_power_tree")
+        self.assertEqual(output["annotation_source"]["name"], "power_tree_spec.json")
+        self.assertEqual(len(output["annotation_source"]["sha256"]), 64)
         r = subprocess.run([sys.executable, "-m", "hardwarecheck", "checklist",
                             "--category", "POWER"], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)

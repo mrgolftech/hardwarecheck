@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from .cadence import build_design, get_component, get_net
+from .cadence import build_design, get_component, get_net, file_digest
 from .bom import parse_bom_csv, compare_bom
 from .rules import run_rules
 from .report import validate_findings
@@ -67,7 +67,10 @@ def execute(args: argparse.Namespace) -> dict:
             if path.stat().st_size > 2_000_000:
                 raise ValueError("power spec JSON exceeds 2 MB")
             spec = json.loads(path.read_text(encoding="utf-8-sig"))
-        return analyze_power_tree(design, spec)
+        report = analyze_power_tree(design, spec)
+        if args.power_spec:
+            report["annotation_source"] = file_digest(args.power_spec)
+        return report
     if args.command == "trace-zero":
         design = build_design(args.netlist, args.parts)
         bom = parse_bom_csv(args.bom) if args.bom else None
